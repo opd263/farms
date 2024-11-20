@@ -47,6 +47,65 @@ const App = () => {
     setFilteredProducts(sorted);
   };
 
+  // POST: Add a new product
+  const addProduct = async (newProduct) => {
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newProduct),
+      });
+      const data = await response.json();
+      setProducts((prevProducts) => [...prevProducts, data.product]);
+      setFilteredProducts((prevProducts) => [...prevProducts, data.product]);
+    } catch (error) {
+      console.error('Error adding product:', error);
+    }
+  };
+
+  // PATCH: Update an existing product
+  const updateProduct = async (id, updatedFields) => {
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedFields),
+      });
+      const data = await response.json();
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === id ? { ...product, ...data.product } : product
+        )
+      );
+      setFilteredProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === id ? { ...product, ...data.product } : product
+        )
+      );
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+
+  // DELETE: Remove a product
+  const deleteProduct = async (id) => {
+    try {
+      await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+      });
+      setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+      setFilteredProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== id)
+      );
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
+
   return (
     <div className="app">
       <header>
@@ -55,6 +114,31 @@ const App = () => {
       <div className="controls">
         <Filter onFilter={handleFilter} />
         <Sort onSort={handleSort} />
+        {/* Example buttons to test the CRUD operations */}
+        <button
+          onClick={() =>
+            addProduct({
+              name: 'New Product',
+              price: 100,
+              rating: 4.5,
+              description: 'A brand new product',
+            })
+          }
+        >
+          Add Product
+        </button>
+        <button
+          onClick={() =>
+            updateProduct(1, { price: 120, rating: 5 })
+          }
+        >
+          Update Product
+        </button>
+        <button
+          onClick={() => deleteProduct(1)}
+        >
+          Delete Product
+        </button>
       </div>
       {loading ? <p>Loading...</p> : <ProductList products={filteredProducts} />}
     </div>
@@ -62,5 +146,3 @@ const App = () => {
 };
 
 export default App;
-
-
