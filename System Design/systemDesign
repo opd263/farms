@@ -1,0 +1,76 @@
+graph TB
+    subgraph Client Layer
+        Web[Web Application]
+        Mobile[Mobile Apps]
+    end
+
+    subgraph CDN / Edge
+        CDN[Content Delivery Network]
+        WAF[Web Application Firewall]
+    end
+
+    subgraph Load Balancer Layer
+        LB[Load Balancer]
+    end
+
+    subgraph API Gateway Layer
+        API[API Gateway]
+        Rate[Rate Limiter]
+    end
+
+    subgraph Service Layer
+        Auth[Authentication Service]
+        Product[Product Service]
+        Order[Order Service]
+        Payment[Payment Service]
+        Search[Search Service]
+        Cart[Cart Service]
+    end
+
+    subgraph Caching Layer
+        Redis[Redis Cache]
+        CDNCache[CDN Cache]
+    end
+
+    subgraph Database Layer
+        subgraph Primary Storage
+            ProductDB[(Product DB)]
+            OrderDB[(Order DB)]
+            UserDB[(User DB)]
+        end
+        ES[Elasticsearch]
+    end
+
+    subgraph Message Queue
+        MQ[Message Queue]
+    end
+
+    subgraph External Services
+        Payment3rd[Payment Gateway]
+        Email[Email Service]
+        Analytics[Analytics]
+    end
+
+    Web & Mobile --> CDN
+    CDN --> WAF
+    WAF --> LB
+    LB --> API
+    API --> Rate
+    Rate --> Service Layer
+
+    Auth --> Redis
+    Product --> Redis
+    Order --> Redis
+    Cart --> Redis
+    Search --> ES
+
+    Product --> ProductDB
+    Order --> OrderDB
+    Auth --> UserDB
+
+    Order --> MQ
+    MQ --> Payment
+    Payment --> Payment3rd
+    MQ --> Email
+
+    Service Layer --> Analytics
