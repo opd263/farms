@@ -1,0 +1,29 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+void findMaxItems(vector<int>& prices, int budget, int index, int count, int& maxCount) {
+    if (budget < 0) {
+        return;
+    }
+    maxCount = max(maxCount, count);
+    for (int i = index; i < prices.size(); i++) {
+        findMaxItems(prices, budget - prices[i], i + 1, count + 1, maxCount);
+    }
+}
+
+int main() {
+    vector<int> prices = {10, 20, 30, 40, 50}; // Example product prices
+    int budget = 60; // Example budget
+
+    sort(prices.begin(), prices.end()); // Sorting prices for efficiency
+    int maxCount = 0;
+
+    findMaxItems(prices, budget, 0, 0, maxCount);
+
+    cout << "Maximum number of items that can be purchased: " << maxCount << endl;
+
+    return 0;
+}
